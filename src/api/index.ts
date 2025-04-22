@@ -1,0 +1,22 @@
+
+import { Router } from 'express'
+
+import reminders from './reminders'
+import templates from './templates'
+import sequenceTemplates from './sequenceTemplates'
+import sequenceSteps from './sequenceSteps'
+import sequences from './sequences'
+import accounts from './accounts'
+import customers from './customers'
+
+const router = Router()
+
+router.use('/reminders', reminders)
+router.use('/templates', templates)
+router.use('/sequence-templates', sequenceTemplates)
+router.use('/sequence-steps', sequenceSteps)
+router.use('/sequences', sequences)
+router.use('/accounts', accounts)
+router.use('/customers', customers)
+
+export default router

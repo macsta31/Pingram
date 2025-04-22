@@ -1,0 +1,41 @@
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: reminders
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    restart: always
+    ports:
+      - "6379:6379"
+
+ 
+  api:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+      - "5555:5555"  # 👈 Add this line
+
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+    command: sh -c "npx prisma migrate dev --name init && npm run dev"
+
+volumes:
+  postgres_data:

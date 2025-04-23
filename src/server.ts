@@ -31,7 +31,7 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction): void 
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000
 
-
+import './lib/queue/workers/reminderWorker'
 
 app.listen(PORT, () => {
 	console.log(`API running on port ${PORT}`)

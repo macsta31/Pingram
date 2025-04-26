@@ -10,6 +10,10 @@ RUN npm install
 
 COPY . .
 
+# Generate prisma client
+RUN npx prisma generate
+
+# Build TS project
 RUN npm run build
 
 EXPOSE 3000

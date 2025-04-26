@@ -1,21 +1,21 @@
 
-# Dockerfile
-
 FROM node:18
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
-
+# Copy everything first
 COPY . .
 
-# Generate prisma client
+# Install dependencies
+RUN npm install
+
+# Generate Prisma Client
 RUN npx prisma generate
 
-# Build TS project
+# Build your project
 RUN npm run build
 
 EXPOSE 3000
 
 CMD ["npm", "run", "start"]
+

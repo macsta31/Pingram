@@ -1,22 +1,17 @@
 
+# Dockerfile
 
 FROM node:18
 
 WORKDIR /app
 
-# Copy package files and install dependencies (without running postinstall yet)
 COPY package*.json ./
+RUN npm install
 
-# Temporarily disable postinstall
-RUN npm install --ignore-scripts
-
-# Copy everything else (this includes your prisma/ folder)
 COPY . .
 
-# Now run prisma generate *after* schema is present
-RUN npm run postinstall
+RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
-
+CMD ["npm", "run", "start"]

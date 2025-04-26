@@ -24,7 +24,9 @@ services:
 
  
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     ports:
       - "3000:3000"

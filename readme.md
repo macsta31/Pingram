@@ -27,3 +27,8 @@ docker-compose up postgres redis
 ```bash
 docker-compose down -v
 ```
+
+### Enter api container
+```bash
+docker exec -it pingram-api-1 sh
+```

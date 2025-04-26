@@ -18,9 +18,6 @@ export const makeReminderService = (deps: { reminderRepo: ReminderRepo }): Remin
 	return {
 		createReminder: async (data) => {
 			const reminder = await reminderRepo.createReminder(data)
-			const delayMs = new Date(data.sendAt).getTime() - Date.now()
-			await addReminderJob({ id: reminder.id }, delayMs)
-
 			return reminder
 		},
 

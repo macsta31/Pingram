@@ -1,5 +1,6 @@
 
 import { Router } from 'express'
+import bullboard from './admin/bullboard'
 
 import reminders from './reminders'
 import templates from './templates'
@@ -18,5 +19,8 @@ router.use('/sequence-steps', sequenceSteps)
 router.use('/sequences', sequences)
 router.use('/accounts', accounts)
 router.use('/customers', customers)
+
+
+router.use('/admin', bullboard)
 
 export default router

@@ -28,14 +28,15 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-      - "5555:5555"  # 👈 Add this line
-
+      - "5555:5555"
+    volumes:
+      - .:/app
+      - /app/node_modules
     env_file:
       - .env
     depends_on:
       - postgres
       - redis
-    command: sh -c "npx prisma migrate dev --name init && npm run dev"
-
+    entrypoint: ["sh", "./docker/entrypoint.sh"]
 volumes:
   postgres_data:

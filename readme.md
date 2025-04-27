@@ -52,7 +52,7 @@ Instead of hardcoding these flows into each app, **Pingram** provides a **genera
 
 #### 1. Clone the repo
 ```bash
-git clone <your_repo_url>
+git clone https://github.com/macsta31/Pingram
 cd pingram
 ```
 

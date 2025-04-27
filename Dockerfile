@@ -12,6 +12,9 @@ RUN npm install
 # Generate Prisma Client
 RUN npx prisma generate
 
+# Apply migrations
+RUN npx prisma migrate deploy
+
 # Build your project
 RUN npm run build
 

@@ -158,6 +158,8 @@ SequenceTemplates define the series of steps (delays, channels, templates).
 
 ## 🌲Code tree
 
+```markdown
+```
 pingram/
 ├── docker-compose.yml
 ├── Dockerfile
@@ -172,7 +174,7 @@ pingram/
 │   │   ├── sequences.ts
 │   │   └── templates.ts
 │   ├── generated/
-│   │   └── prisma/      # Auto-generated Prisma Client (ignored in Git)
+│   │   └── prisma/    # Auto-generated Prisma Client (ignored in Git)
 │   ├── lib/
 │   │   ├── db/
 │   │   │   ├── accounts.ts
@@ -201,7 +203,8 @@ pingram/
 ├── tsconfig.json
 ├── README.md
 └── .env
-
+```
+```
 ---
 
 ## ✨ Future Work

@@ -1,0 +1,22 @@
+
+FROM node:18
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y netcat-openbsd
+
+COPY package*.json ./
+COPY prisma ./prisma
+COPY .env.test .env
+
+RUN npm install
+
+COPY . .
+
+RUN npx prisma generate --schema=./prisma/schema.prisma
+
+COPY ./docker/test-entrypoint.sh ./test-entrypoint.sh
+RUN chmod +x ./test-entrypoint.sh
+
+ENTRYPOINT ["./test-entrypoint.sh"]
+

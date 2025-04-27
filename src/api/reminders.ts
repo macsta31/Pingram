@@ -81,12 +81,23 @@ reminderRouter.post('/', async (req: Request, res: Response) => {
 
 reminderRouter.get('/:id', async (req: Request, res: Response) => {
 	const result = await reminderService.getReminderById(req.params.id)
-	res.json(result)
+	if (result) {
+		res.json(result)
+	}
+	else {
+		res.status(404).json({ message: "Entity not found" })
+	}
+	return
 })
 
 reminderRouter.put('/:id', async (req: Request, res: Response) => {
 	const result = await reminderService.updateReminder(req.params.id, req.body)
-	res.json(result)
+	if (result) {
+		res.json(result)
+	}
+	else {
+		res.status(404).json({ error: "Entity not found" })
+	}
 })
 
 reminderRouter.post('/:id/cancel', async (req: Request, res: Response) => {

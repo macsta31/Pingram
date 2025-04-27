@@ -6,7 +6,7 @@ import { addReminderJob } from '../queue/producers/reminderProducer'
 export interface ReminderService {
 	createReminder: (data: Prisma.ReminderCreateInput) => Promise<Reminder>
 	getReminderById: (id: string) => Promise<Reminder | null>
-	updateReminder: (id: string, data: Prisma.ReminderUpdateInput) => Promise<Reminder>
+	updateReminder: (id: string, data: Prisma.ReminderUpdateInput) => Promise<Reminder | null>
 	cancelReminder: (id: string) => Promise<Reminder>
 	markAsSent: (id: string, sentAt?: Date) => Promise<Reminder>
 	getRemindersByCustomer: (customerId: string) => Promise<Reminder[]>
@@ -26,7 +26,13 @@ export const makeReminderService = (deps: { reminderRepo: ReminderRepo }): Remin
 		},
 
 		updateReminder: async (id, data) => {
-			return reminderRepo.updateReminder(id, data)
+			const reminder = await reminderRepo.getReminderById(id);
+			if (reminder) {
+				return reminderRepo.updateReminder(id, data)
+			}
+			else {
+				return null
+			}
 		},
 
 		cancelReminder: async (id) => {

@@ -8,13 +8,14 @@ import { reminderQueue } from "../../lib/queue/queues/reminderQueue";
 const serverAdapter = new ExpressAdapter()
 serverAdapter.setBasePath('/api/admin/queues')
 
-createBullBoard({
-	queues: [
-		new BullMQAdapter(reminderQueue)
-	],
-	serverAdapter
-})
-
+if (process.env.NODE_ENV !== 'test') {
+	createBullBoard({
+		queues: [
+			new BullMQAdapter(reminderQueue)
+		],
+		serverAdapter
+	})
+}
 const router = express.Router()
 router.use('/queues', serverAdapter.getRouter())
 

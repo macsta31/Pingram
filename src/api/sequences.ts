@@ -1,11 +1,22 @@
 import express, { Request, Response } from 'express'
 import { makeSequenceService } from '../lib/services/sequenceService'
 import { sequenceRepo } from '../lib/db/sequences'
+import { SequenceSchema } from '@/lib/validators/sequenceValidator'
 
 const router = express.Router()
 const service = makeSequenceService({ sequenceRepo })
 
 router.post('/', async (req: Request, res: Response) => {
+	const parsed = SequenceSchema.safeParse(req.body)
+
+	if (!parsed.success) {
+		res.status(400).json({
+			message: 'Validation error',
+			errors: parsed.error.flatten().fieldErrors
+		})
+		return
+	}
+
 	const result = await service.createSequence(req.body)
 	res.json(result)
 })

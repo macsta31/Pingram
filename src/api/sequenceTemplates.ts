@@ -1,11 +1,22 @@
 import express, { Request, Response } from 'express'
 import { makeSequenceTemplateService } from '../lib/services/sequenceTemplateService'
 import { sequenceTemplateRepo } from '../lib/db/sequenceTemplates'
+import { SequenceTemplateSchema } from '@/lib/validators/sequenceTemplateValidator'
 
 const router = express.Router()
 const service = makeSequenceTemplateService({ sequenceTemplateRepo })
 
 router.post('/', async (req: Request, res: Response) => {
+	const parsed = SequenceTemplateSchema.safeParse(req.body)
+
+	if (!parsed.success) {
+		res.status(400).json({
+			message: 'Validation error',
+			errors: parsed.error.flatten().fieldErrors
+		})
+		return
+	}
+
 	const result = await service.createSequenceTemplate(req.body)
 	res.json(result)
 })

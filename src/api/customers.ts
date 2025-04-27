@@ -1,11 +1,22 @@
 import express, { Request, Response } from 'express'
 import { makeCustomerService } from '../lib/services/customerService'
 import { customerRepo } from '../lib/db/customers'
+import { CustomerSchema } from '@/lib/validators/customerValidator'
 
 const customerRouter = express.Router()
 const customerService = makeCustomerService({ customerRepo })
 
 customerRouter.post('/', async (req: Request, res: Response) => {
+	const parsed = CustomerSchema.safeParse(req.body)
+
+	if (!parsed.success) {
+		res.status(400).json({
+			message: 'Validation error',
+			errors: parsed.error.flatten().fieldErrors
+		})
+		return
+	}
+
 	const result = await customerService.createCustomer(req.body)
 	res.json(result)
 })

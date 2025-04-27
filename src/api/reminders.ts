@@ -5,12 +5,23 @@ import { addReminderJob } from '../lib/queue/producers/reminderProducer'
 import { isValid, parseISO } from 'date-fns'
 import { makeSequenceStepService } from '../lib/services/sequenceStepService'
 import { sequenceStepRepo } from '../lib/db/sequenceSteps'
+import { ReminderSchema } from '@/lib/validators/reminderValidators'
 
 const reminderRouter = express.Router()
 const reminderService = makeReminderService({ reminderRepo })
 const stepService = makeSequenceStepService({ sequenceStepRepo })
 
 reminderRouter.post('/', async (req: Request, res: Response) => {
+	const parsed = ReminderSchema.safeParse(req.body)
+
+	if (!parsed.success) {
+		res.status(400).json({
+			message: "Validation failed",
+			errors: parsed.error.flatten().fieldErrors
+		})
+		return
+	}
+
 	const {
 		sequenceId,
 		customerId,
@@ -21,20 +32,12 @@ reminderRouter.post('/', async (req: Request, res: Response) => {
 		message,
 		title,
 		channels
-	} = req.body
-
-	if (!sequenceId || !customerId || !accountId || !stepId || !sendAt) {
-		res.status(400).json({ error: 'Missing required params', sequenceId, customerId, accountId, stepId, sendAt })
-	}
+	} = parsed.data
 
 	const parsedSendAt = parseISO(sendAt)
 	if (!isValid(parsedSendAt)) {
 		return res.status(400).json({ error: 'Invalid sendAt timestamp' })
 	}
-	if (sendAt.charAt(sendAt.length - 1) !== 'Z') {
-		return res.status(400).json({ error: 'sendAt must be UTC timestamp ending with Z' })
-	}
-
 	// Get Time until job execution in Ms
 	const delayMs = new Date(sendAt).getTime() - Date.now();
 
@@ -52,16 +55,15 @@ reminderRouter.post('/', async (req: Request, res: Response) => {
 		channels
 	}
 
-
 	const step = await stepService.getSequenceStepById(stepId);
 
 	if (!step?.templateId && !message) {
-		res.status(400).json({ error: 'Step has no template ID and no message provided' })
+		res.status(400).json({ errors: { stepId: 'Step has no template ID and no message provided' } })
 		return
 	}
 
 	if (!step?.templateId && !channels) {
-		res.status(400).json({ error: 'Step has no template ID and no channels provided' })
+		res.status(400).json({ errors: { stepId: 'Step has no template ID and no channels provided' } })
 		return
 	}
 

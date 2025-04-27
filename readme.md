@@ -159,7 +159,6 @@ SequenceTemplates define the series of steps (delays, channels, templates).
 ## 🌲Code tree
 
 ```markdown
-```
 pingram/
 ├── docker-compose.yml
 ├── Dockerfile
@@ -203,7 +202,6 @@ pingram/
 ├── tsconfig.json
 ├── README.md
 └── .env
-```
 ```
 ---
 

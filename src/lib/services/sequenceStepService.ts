@@ -1,4 +1,4 @@
-import { Prisma, SequenceStep } from '../../generated/prisma'
+import { Prisma, SequenceStep } from '@/generated/prisma'
 import { SequenceStepRepo } from '../db/sequenceSteps'
 
 export interface SequenceStepService {

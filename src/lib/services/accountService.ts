@@ -1,5 +1,5 @@
 import { AccountRepo } from "../db/accounts";
-import { Account, Prisma } from "../../generated/prisma";
+import { Account, Prisma } from "@/generated/prisma";
 
 export interface AccountService {
 	createAccount: (data: Prisma.AccountCreateInput) => Promise<Account>

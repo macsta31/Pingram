@@ -1,6 +1,6 @@
 
 import { ReminderRepo } from '../db/reminders'
-import { Reminder, Prisma } from '../../generated/prisma'
+import { Reminder, Prisma } from '@/generated/prisma'
 import { addReminderJob } from '../queue/producers/reminderProducer'
 
 export interface ReminderService {

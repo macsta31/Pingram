@@ -1,4 +1,4 @@
-import { Prisma, Sequence } from '../../generated/prisma'
+import { Prisma, Sequence } from '@/generated/prisma'
 import { SequenceRepo } from '../db/sequences'
 
 export interface SequenceService {

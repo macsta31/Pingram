@@ -1,4 +1,4 @@
-import { Prisma, Customer } from "../../generated/prisma";
+import { Prisma, Customer } from "@/generated/prisma";
 import { CustomerRepo } from "../db/customers";
 
 export interface CustomerService {

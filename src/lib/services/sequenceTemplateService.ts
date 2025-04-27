@@ -1,4 +1,4 @@
-import { Prisma, SequenceTemplate } from '../../generated/prisma'
+import { Prisma, SequenceTemplate } from '@/generated/prisma'
 import { SequenceTemplateRepo } from '../db/sequenceTemplates'
 
 

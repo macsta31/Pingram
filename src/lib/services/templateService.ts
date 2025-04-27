@@ -1,4 +1,4 @@
-import { Prisma, Template } from '../../generated/prisma'
+import { Prisma, Template } from '@/generated/prisma'
 import { TemplateRepo } from '../db/templates'
 
 export interface TemplateService {

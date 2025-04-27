@@ -1,4 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from 'express'
+import './setupAliases'
 import cors from 'cors'
 import morgan from 'morgan'
 import dotenv from 'dotenv'

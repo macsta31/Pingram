@@ -1,12 +1,12 @@
 
 import { ReminderRepo } from '../db/reminders'
-import { Reminder, Prisma } from '@/generated/prisma'
+import { Reminder, Prisma, SequenceStep } from '@/generated/prisma'
 import { addReminderJob } from '../queue/producers/reminderProducer'
 import { logger } from '../logs/logger'
 import type { CreateReminderInput } from '../validators/reminderValidators'
 
 export interface ReminderService {
-	createReminder: (data: CreateReminderInput) => Promise<Reminder>
+	createReminder: (data: CreateReminderInput, step: SequenceStep | null) => Promise<Reminder>
 	getReminderById: (id: string) => Promise<Reminder | null>
 	updateReminder: (id: string, data: Prisma.ReminderUpdateInput) => Promise<Reminder | null>
 	cancelReminder: (id: string) => Promise<Reminder>
@@ -19,15 +19,35 @@ export const makeReminderService = (deps: { reminderRepo: ReminderRepo }): Remin
 	const { reminderRepo } = deps
 
 	return {
-		createReminder: async (data) => {
+		createReminder: async (data, step) => {
+			// If no step is passed, the concrete reminder information needs to be on the original request
+			if (!(step || (data.sendAt && data.channels && data.message && data.title))) {
+				throw new Error('Invalid state, no step and missing reminder information')
+			}
 			// Get Time until job execution in Ms
-			const delayMs = new Date(data.sendAt).getTime() - Date.now();
+			let delayMs;
+			if (data.sendAt) {
+				delayMs = new Date(data.sendAt).getTime() - Date.now();
+			}
+			else {
+				// this check should never be true because of the above state check
+				if (!step) {
+					throw new Error('Invalid state, no step and no sendAt, we should never arrive here')
+				}
+				// convert delay minutes to delay milliseconds
+				delayMs = step.delayMinutes * 60000
+				let now = (new Date()).getTime()
+				let sendAtTime = now + delayMs
+				data.sendAt = (new Date(sendAtTime)).toISOString()
+			}
 
 			if (delayMs < 0) {
 				throw new Error('sendAt cannot be in the past')
 			}
 
 			logger.info('delayMS', delayMs)
+
+			logger.info('create reminder data', data)
 
 			const reminder = await reminderRepo.createReminder(data)
 

@@ -14,7 +14,7 @@ export const ReminderSchema = z.object({
 		return isValid(parsed);
 	}, {
 		message: 'Invalid ISO timestamp',
-	}),
+	}).optional(),
 	status: ReminderStatusEnum,
 	channels: z.array(z.string()).optional(),
 	message: z.string().optional(),

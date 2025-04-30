@@ -6,7 +6,6 @@ import { makeSequenceStepService } from '../lib/services/sequenceStepService'
 import { sequenceStepRepo } from '../lib/db/sequenceSteps'
 import { ReminderSchema } from '@/lib/validators/reminderValidators'
 import { logger } from '@/lib/logs/logger'
-import { Reminder } from '@prisma/client'
 
 const reminderRouter = express.Router()
 const reminderService = makeReminderService({ reminderRepo })
@@ -30,13 +29,20 @@ reminderRouter.post('/', async (req: Request, res: Response) => {
 		channels
 	} = parsed.data
 
-	const parsedSendAt = parseISO(sendAt)
-	if (!isValid(parsedSendAt)) {
-		return res.status(400).json({ error: 'Invalid sendAt timestamp' })
-	}
-
 	const step = await stepService.getSequenceStepById(stepId);
 
+	if (!step && !sendAt) {
+		res.status(400).json({ errors: { stepId: 'Step has no template ID and no sendAt provided' } })
+	}
+
+
+
+	if (sendAt) {
+		const parsedSendAt = parseISO(sendAt)
+		if (!isValid(parsedSendAt)) {
+			return res.status(400).json({ error: 'Invalid sendAt timestamp' })
+		}
+	}
 	if (!step?.templateId && !message) {
 		res.status(400).json({ errors: { stepId: 'Step has no template ID and no message provided' } })
 		return
@@ -52,7 +58,7 @@ reminderRouter.post('/', async (req: Request, res: Response) => {
 	// Create reminder with job id for possible job removal (if step completion event is triggered)
 	let result;
 	try {
-		result = await reminderService.createReminder(parsed.data)
+		result = await reminderService.createReminder(parsed.data, step)
 	}
 	catch (err: any) {
 		res.status(500).json({ message: "Error creating reminder", error: err.message })

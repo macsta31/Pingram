@@ -1,11 +1,12 @@
 import express, { Request, Response } from 'express'
 import { makeReminderService } from '../lib/services/reminderService'
 import { reminderRepo } from '../lib/db/reminders'
-import { addReminderJob } from '../lib/queue/producers/reminderProducer'
 import { isValid, parseISO } from 'date-fns'
 import { makeSequenceStepService } from '../lib/services/sequenceStepService'
 import { sequenceStepRepo } from '../lib/db/sequenceSteps'
 import { ReminderSchema } from '@/lib/validators/reminderValidators'
+import { logger } from '@/lib/logs/logger'
+import { Reminder } from '@prisma/client'
 
 const reminderRouter = express.Router()
 const reminderService = makeReminderService({ reminderRepo })
@@ -23,36 +24,15 @@ reminderRouter.post('/', async (req: Request, res: Response) => {
 	}
 
 	const {
-		sequenceId,
-		customerId,
-		accountId,
 		stepId,
 		sendAt,
-		status,
 		message,
-		title,
 		channels
 	} = parsed.data
 
 	const parsedSendAt = parseISO(sendAt)
 	if (!isValid(parsedSendAt)) {
 		return res.status(400).json({ error: 'Invalid sendAt timestamp' })
-	}
-	// Get Time until job execution in Ms
-	const delayMs = new Date(sendAt).getTime() - Date.now();
-
-	if (delayMs < 0) {
-		return res.status(400).json({ error: 'sendAt cannot be in the past' })
-	}
-
-	const queueData = {
-		sequenceId,
-		customerId,
-		accountId,
-		stepId,
-		message,
-		title,
-		channels
 	}
 
 	const step = await stepService.getSequenceStepById(stepId);
@@ -67,14 +47,16 @@ reminderRouter.post('/', async (req: Request, res: Response) => {
 		return
 	}
 
-	// Create job with id without fetching data in case information on any doc changes between now and job execution
-	const job = await addReminderJob(queueData, delayMs)
+	logger.info('input', req.body);
 
 	// Create reminder with job id for possible job removal (if step completion event is triggered)
-	const result = await reminderService.createReminder({
-		...req.body,
-		jobId: job.id
-	})
+	let result;
+	try {
+		result = await reminderService.createReminder(parsed.data)
+	}
+	catch (err: any) {
+		res.status(500).json({ message: "Error creating reminder", error: err.message })
+	}
 
 	res.json(result)
 })

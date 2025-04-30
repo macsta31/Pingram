@@ -16,7 +16,9 @@ export const ReminderSchema = z.object({
 		message: 'Invalid ISO timestamp',
 	}),
 	status: ReminderStatusEnum,
-	channels: z.array(z.string()),
+	channels: z.array(z.string()).optional(),
 	message: z.string().optional(),
 	title: z.string().optional(),
 })
+
+export type CreateReminderInput = z.infer<typeof ReminderSchema>

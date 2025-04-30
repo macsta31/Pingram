@@ -92,7 +92,7 @@ model Reminder {
   sendAt     DateTime
   sentAt     DateTime?
   status     String
-  jobId      String
+  jobId      String?
   stepId     String?
   message    String?
   title      String?

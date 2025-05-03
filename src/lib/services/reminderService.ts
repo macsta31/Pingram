@@ -94,9 +94,6 @@ export const makeReminderService = (deps: { reminderRepo: ReminderRepo }): Remin
 
 		getRemindersByCustomer: async (customerId) => {
 			return reminderRepo.getRemindersByCustomer(customerId)
-		},
-		getRemindersBySequenceAndCustomer: async (sequenceId, customerId) => {
-			return reminderRepo.getRemindersBySequenceAndCustomer(sequenceId, customerId)
 		}
 	}
 }

@@ -6,7 +6,6 @@ const router = express.Router({ mergeParams: true })
 const cancelService = makeCancelService()
 
 router.post('/', async (req: Request, res: Response) => {
-	logger.info("params", Object.keys(req.params))
 	const { cancel_event, sequenceId } = req.body;
 	const customerId = req.params.customerId;
 

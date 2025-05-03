@@ -10,7 +10,7 @@ export interface ReminderService {
 	getReminderById: (id: string) => Promise<Reminder | null>
 	updateReminder: (id: string, data: Prisma.ReminderUpdateInput) => Promise<Reminder | null>
 	cancelReminder: (id: string) => Promise<Reminder>
-	cancelRemindersBySequence: (sequenceId: string) => Promise<number>
+	cancelRemindersBySequence: (sequenceId: string) => Promise<Reminder[]>
 	markAsSent: (id: string, sentAt?: Date) => Promise<Reminder>
 	markAsFailed: (id: string, failedAt?: Date) => Promise<Reminder>
 	getRemindersByCustomer: (customerId: string) => Promise<Reminder[]>
@@ -28,7 +28,7 @@ export const makeReminderService = (deps: { reminderRepo: ReminderRepo }): Remin
 			// Get Time until job execution in Ms
 			let delayMs;
 			if (data.sendAt) {
-				delayMs = new Date(data.sendAt).getTime() - Date.now();
+				delayMs = new Date(data.sendAt).getTime() - Date.now()
 			}
 			else {
 				// this check should never be true because of the above state check
@@ -50,13 +50,21 @@ export const makeReminderService = (deps: { reminderRepo: ReminderRepo }): Remin
 
 			logger.info('create reminder data', data)
 
+			const reminderExists = await reminderRepo.getRemindersBySequenceAndStep(data.sequenceId, data.stepId)
+			if (reminderExists) {
+				throw new Error(`Reminder for this sequence and step already exists: "${reminderExists.id}"`)
+			}
+
 			const reminder = await reminderRepo.createReminder(data)
 
 			const job = await addReminderJob(data, delayMs, reminder.id)
 
 			logger.info('JobId', job.id)
 
-			return reminder
+			const reminderWithJobId = await reminderRepo.updateReminder(reminder.id, {
+				jobId: job.id
+			})
+			return reminderWithJobId
 		},
 
 		getReminderById: async (id) => {

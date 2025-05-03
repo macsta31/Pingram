@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express'
 import { makeCustomerService } from '../lib/services/customerService'
 import { customerRepo } from '../lib/db/customers'
 import { CustomerSchema } from '@/lib/validators/customerValidator'
+import cancelEvents from './cancelEvents'
 
 const customerRouter = express.Router()
 const customerService = makeCustomerService({ customerRepo })
@@ -30,5 +31,7 @@ customerRouter.get('/account/:accountId/', async (req: Request, res: Response) =
 	const result = await customerService.getCustomersByAccountId(req.params.accountId)
 	res.json(result)
 })
+
+customerRouter.use('/:customerId/cancel', cancelEvents)
 
 export default customerRouter

@@ -1,4 +1,6 @@
 
+import { Reminder } from '@/generated/prisma'
+import { logger } from '../logs/logger'
 import prisma from './prisma'
 
 export interface ReminderRepo {
@@ -9,7 +11,8 @@ export interface ReminderRepo {
 	getRemindersByAccount: (accountId: string) => Promise<any[]>
 	getRemindersByCustomer: (customerId: string) => Promise<any[]>
 	getRemindersBySequenceAndCustomer: (sequenceId: string, customerId: string) => Promise<any[]>
-	cancelRemindersBySequence: (sequenceId: string) => Promise<number>
+	cancelRemindersBySequence: (sequenceId: string) => Promise<Reminder[]>
+	getRemindersBySequenceAndStep: (sequenceId: string, stepId: string) => Promise<any>
 }
 
 export const reminderRepo: ReminderRepo = {
@@ -21,7 +24,7 @@ export const reminderRepo: ReminderRepo = {
 	getRemindersByCustomer: (customerId) => prisma.reminder.findMany({ where: { customerId } }),
 	getRemindersBySequenceAndCustomer: (sequenceId, customerId) => prisma.reminder.findMany({ where: { sequenceId, customerId } }),
 	cancelRemindersBySequence: async (sequenceId) => {
-		const result = await prisma.reminder.updateMany(
+		const result = await prisma.reminder.updateManyAndReturn(
 			{
 				where: {
 					sequenceId,
@@ -36,6 +39,15 @@ export const reminderRepo: ReminderRepo = {
 			}
 		)
 
-		return result.count
+		return result
+	},
+	getRemindersBySequenceAndStep: (sequenceId, stepId) => {
+		return prisma.reminder.findFirst({
+			where: {
+				sequenceId,
+				stepId,
+				status: 'pending'
+			}
+		})
 	}
 } 

@@ -21,3 +21,11 @@ export const removeReminderJob = async (jobId: string): Promise<void> => {
 		console.error('Failed to remove reminder job')
 	}
 }
+
+// export const getReminderJobsForSequence = async (sequenceId: string): Promise<String> => {
+// 	try {
+// 		const jobs: Job[] = await reminderQueue.getJobs()
+// 	} catch(err) {
+//
+// 	}
+// }

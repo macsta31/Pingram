@@ -53,8 +53,6 @@ reminderRouter.post('/', async (req: Request, res: Response) => {
 		return
 	}
 
-	logger.info('input', req.body);
-
 	// Create reminder with job id for possible job removal (if step completion event is triggered)
 	let result;
 	try {

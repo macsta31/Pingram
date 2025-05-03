@@ -9,6 +9,7 @@ import sequenceSteps from './sequenceSteps'
 import sequences from './sequences'
 import accounts from './accounts'
 import customers from './customers'
+import cancelEvents from './cancelEvents'
 
 const router = Router()
 

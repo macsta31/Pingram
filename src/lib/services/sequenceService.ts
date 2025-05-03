@@ -9,6 +9,7 @@ export interface SequenceService {
 	getSequencesByAccount(accountId: string): Promise<Sequence[]>
 	getSequencesByCustomer(customerId: string): Promise<Sequence[]>
 	getSequencesByCustomerAndTemplate(customerId: string, sequenceTemplateId: string): Promise<Sequence[]>
+	cancelSequence(id: string): Promise<Sequence>
 }
 
 export const makeSequenceService = (deps: { sequenceRepo: SequenceRepo }): SequenceService => {
@@ -21,6 +22,7 @@ export const makeSequenceService = (deps: { sequenceRepo: SequenceRepo }): Seque
 		deleteSequence: (id) => sequenceRepo.deleteSequence(id),
 		getSequencesByAccount: (accountId) => sequenceRepo.getSequencesByAccount(accountId),
 		getSequencesByCustomer: (customerId) => sequenceRepo.getSequencesByCustomer(customerId),
-		getSequencesByCustomerAndTemplate: (customerId, sequenceTemplateId) => sequenceRepo.getSequencesByCustomerAndTemplate(customerId, sequenceTemplateId)
+		getSequencesByCustomerAndTemplate: (customerId, sequenceTemplateId) => sequenceRepo.getSequencesByCustomerAndTemplate(customerId, sequenceTemplateId),
+		cancelSequence: (id) => sequenceRepo.cancelSequence(id)
 	}
 }

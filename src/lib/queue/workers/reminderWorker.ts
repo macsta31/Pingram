@@ -129,6 +129,8 @@ reminderWorker.on('completed', async (job: Job | undefined, result: Reminder) =>
 		logger.error("Step not found")
 		return
 	}
+
+
 	const sequenceTemplate = await sequenceTemplateService.getSequenceTemplateById(step.sequenceTemplateId)
 	if (!sequenceTemplate) {
 		logger.error("Sequence Template not found")

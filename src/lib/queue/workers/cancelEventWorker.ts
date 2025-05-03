@@ -9,6 +9,7 @@ import { sequenceTemplateRepo } from "@/lib/db/sequenceTemplates";
 import { logger } from "@/lib/logs/logger";
 import { makeCustomerService } from "@/lib/services/customerService";
 import { customerRepo } from "@/lib/db/customers";
+import { removeReminderJob } from "../producers/reminderProducer";
 
 
 const sequenceTemplateService = makeSequenceTemplateService({ sequenceTemplateRepo })
@@ -34,10 +35,22 @@ export const cancelReminders = async (type: string, customerId: string): Promise
 		const customerSequences = await sequenceService.getSequencesByCustomerAndTemplate(customer.id, sequenceTemplate.id)
 
 		logger.info(`Found ${customerSequences.length} sequences`)
-
 		const settledCustomerReminders = await Promise.allSettled(customerSequences.map(async (customerSequence) => {
 			const remindersCancelled = await reminderService.cancelRemindersBySequence(customerSequence.id)
-			logger.info(`Cancelled ${remindersCancelled} reminders from sequence ${customerSequence.id}`)
+			logger.info(`Cancelled ${remindersCancelled.length} reminders from sequence ${customerSequence.id}`)
+			const cancelledSequence = await sequenceService.cancelSequence(customerSequence.id)
+			await Promise.all(remindersCancelled.map(async (reminder) => {
+				if (reminder.jobId) {
+					try {
+						const removedJob = await removeReminderJob(reminder.jobId)
+						logger.info("Removed job", removedJob)
+					} catch (err) {
+						logger.error("Error removing job", err)
+
+					}
+				}
+			}))
+			logger.info(`Cancelled sequence: ${cancelledSequence.id}`)
 		}))
 
 		const failedCancels = settledCustomerReminders.filter(settledReminder => settledReminder.status === 'rejected');
@@ -58,7 +71,7 @@ export const cancelReminders = async (type: string, customerId: string): Promise
 
 
 export const cancelEventsWorker = new Worker(
-	'reminders',
+	'cancel-events',
 	async (job: Job): Promise<void> => {
 		const { type, customerId } = job.data;
 		return await cancelReminders(type, customerId);

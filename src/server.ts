@@ -27,6 +27,7 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000
 if (process.env.NODE_ENV !== 'test') {
 
 	import('./lib/queue/workers/reminderWorker')
+	import('./lib/queue/workers/cancelEventWorker')
 
 	app.listen(PORT, () => {
 		logger.info(`API running on port ${PORT}`)

@@ -24,7 +24,10 @@ export const reminderRepo: ReminderRepo = {
 		const result = await prisma.reminder.updateMany(
 			{
 				where: {
-					sequenceId
+					sequenceId,
+					status: {
+						equals: "pending"
+					}
 				},
 				data: {
 					status: 'cancelled',

@@ -9,7 +9,6 @@ import { sequenceTemplateRepo } from "@/lib/db/sequenceTemplates";
 import { logger } from "@/lib/logs/logger";
 import { makeCustomerService } from "@/lib/services/customerService";
 import { customerRepo } from "@/lib/db/customers";
-import { Sequence, SequenceTemplate } from "@/generated/prisma";
 
 
 const sequenceTemplateService = makeSequenceTemplateService({ sequenceTemplateRepo })
@@ -41,9 +40,20 @@ export const cancelReminders = async (type: string, customerId: string): Promise
 			logger.info(`Cancelled ${remindersCancelled} reminders from sequence ${customerSequence.id}`)
 		}))
 
+		const failedCancels = settledCustomerReminders.filter(settledReminder => settledReminder.status === 'rejected');
+		if (failedCancels.length > 0) {
+			logger.error(`Failed to cancel ${failedCancels.length}`, failedCancels)
+		}
+
 		return
 	})
 	)
+
+	const failedSequenceParses = settledCustomerSequences.filter(customerSequence => customerSequence.status === 'rejected')
+	if (failedSequenceParses.length > 0) {
+		logger.error(`Failed to parse ${failedSequenceParses.length} sequences`, failedSequenceParses)
+	}
+	return
 }
 
 

@@ -1,3 +1,4 @@
+import { SequenceTemplate } from '@/generated/prisma'
 import prisma from './prisma'
 
 export interface SequenceTemplateRepo {
@@ -6,6 +7,7 @@ export interface SequenceTemplateRepo {
 	updateSequenceTemplate: (id: string, data: any) => Promise<any>
 	deleteSequenceTemplate: (id: string) => Promise<any>
 	getSequenceTemplatesByAccount: (accountId: string) => Promise<any[]>
+	getSequenceTemplateByCancelEventAndAccount: (cancelOnEvent: string, accountId: string) => Promise<SequenceTemplate[]>
 }
 
 export const sequenceTemplateRepo: SequenceTemplateRepo = {
@@ -14,4 +16,5 @@ export const sequenceTemplateRepo: SequenceTemplateRepo = {
 	updateSequenceTemplate: (id, data) => prisma.sequenceTemplate.update({ where: { id }, data }),
 	deleteSequenceTemplate: (id) => prisma.sequenceTemplate.delete({ where: { id } }),
 	getSequenceTemplatesByAccount: (accountId) => prisma.sequenceTemplate.findMany({ where: { accountId } }),
+	getSequenceTemplateByCancelEventAndAccount: (cancelOnEvent, accountId) => prisma.sequenceTemplate.findMany({ where: { cancelOnEvent, accountId } })
 }

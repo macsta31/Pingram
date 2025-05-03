@@ -1,3 +1,4 @@
+import { SequenceTemplate } from '@/generated/prisma'
 import prisma from './prisma'
 
 export interface SequenceRepo {
@@ -7,6 +8,7 @@ export interface SequenceRepo {
 	deleteSequence: (id: string) => Promise<any>
 	getSequencesByAccount: (accountId: string) => Promise<any[]>
 	getSequencesByCustomer: (customerId: string) => Promise<any[]>
+	getSequencesByCustomerAndTemplate: (customerId: string, sequenceTemplateId: string) => Promise<any[]>
 }
 
 export const sequenceRepo: SequenceRepo = {
@@ -16,4 +18,5 @@ export const sequenceRepo: SequenceRepo = {
 	deleteSequence: (id) => prisma.sequence.delete({ where: { id } }),
 	getSequencesByAccount: (accountId) => prisma.sequence.findMany({ where: { accountId } }),
 	getSequencesByCustomer: (customerId) => prisma.sequence.findMany({ where: { reminders: { some: { customerId } } } }),
+	getSequencesByCustomerAndTemplate: (customerId, sequenceTemplateId) => prisma.sequence.findMany({ where: { sequenceTemplateId, reminders: { some: { customerId } } } })
 }

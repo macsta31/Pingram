@@ -11,3 +11,13 @@ export const addReminderJob = async (data: any, delayMs: number, jobId: string):
 
 	return job
 }
+
+export const removeReminderJob = async (jobId: string): Promise<void> => {
+	try {
+		const job: Job = await reminderQueue.getJob(jobId);
+		await job.remove();
+	}
+	catch (err) {
+		console.error('Failed to remove reminder job')
+	}
+}

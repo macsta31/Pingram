@@ -209,7 +209,7 @@ pingram/
 
 - [ ] Integrate SendGrid email sending.
 - [ ] Integrate Twilio SMS sending.
-- [ ] Connect worker execution to reminder updates and next reminder enqueuing
+- [x] Connect worker execution to reminder updates and next reminder enqueuing
 - [ ] Create routes for sequence unsubscribe on completion events (eg: "onboarding_completed")
 - [ ] Build webhooks for event-based reminder cancellation (eg. "unsubscribe" events).
 - [ ] Add admin dashboard for accounts to manage sequences.

@@ -75,7 +75,9 @@ model Sequence {
   accountId          String
   sequenceTemplateId String
   startAt            DateTime
+  status             String           @default("pending")
   cancelledAt        DateTime?
+  completedAt        DateTime?
   customerId         String
   reminders          Reminder[]
   account            Account          @relation(fields: [accountId], references: [id])
@@ -84,22 +86,24 @@ model Sequence {
 }
 
 model Reminder {
-  id         String        @id @default(uuid())
-  sequenceId String
-  customerId String
-  accountId  String
-  templateId String?
-  sendAt     DateTime
-  sentAt     DateTime?
-  status     String
-  jobId      String?
-  stepId     String?
-  message    String?
-  title      String?
-  channels   String[]
-  account    Account       @relation(fields: [accountId], references: [id])
-  customer   Customer      @relation(fields: [customerId], references: [id])
-  sequence   Sequence      @relation(fields: [sequenceId], references: [id])
-  step       SequenceStep? @relation("ReminderStep", fields: [stepId], references: [id])
-  template   Template?     @relation(fields: [templateId], references: [id])
+  id          String        @id @default(uuid())
+  sequenceId  String
+  customerId  String
+  accountId   String
+  templateId  String?
+  sendAt      DateTime
+  sentAt      DateTime?
+  status      String
+  cancelledAt DateTime?
+  failedAt    DateTime?
+  jobId       String?
+  stepId      String?
+  message     String?
+  title       String?
+  channels    String[]
+  account     Account       @relation(fields: [accountId], references: [id])
+  customer    Customer      @relation(fields: [customerId], references: [id])
+  sequence    Sequence      @relation(fields: [sequenceId], references: [id])
+  step        SequenceStep? @relation("ReminderStep", fields: [stepId], references: [id])
+  template    Template?     @relation(fields: [templateId], references: [id])
 }

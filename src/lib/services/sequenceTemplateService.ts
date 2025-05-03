@@ -8,6 +8,7 @@ export interface SequenceTemplateService {
 	updateSequenceTemplate(id: string, data: Prisma.SequenceTemplateUpdateInput): Promise<SequenceTemplate>
 	deleteSequenceTemplate(id: string): Promise<SequenceTemplate>
 	getSequenceTemplatesByAccount(accountId: string): Promise<SequenceTemplate[]>
+	getSequenceTemplatesByCancelEventAndAccount(cancelOnEvent: string, accountId: string): Promise<SequenceTemplate[]>
 }
 
 export const makeSequenceTemplateService = (deps: { sequenceTemplateRepo: SequenceTemplateRepo }): SequenceTemplateService => {
@@ -19,5 +20,6 @@ export const makeSequenceTemplateService = (deps: { sequenceTemplateRepo: Sequen
 		updateSequenceTemplate: (id, data) => sequenceTemplateRepo.updateSequenceTemplate(id, data),
 		deleteSequenceTemplate: (id) => sequenceTemplateRepo.deleteSequenceTemplate(id),
 		getSequenceTemplatesByAccount: (accountId) => sequenceTemplateRepo.getSequenceTemplatesByAccount(accountId),
+		getSequenceTemplatesByCancelEventAndAccount: (cancelOnEvent, accountId) => sequenceTemplateRepo.getSequenceTemplateByCancelEventAndAccount(cancelOnEvent, accountId)
 	}
 }

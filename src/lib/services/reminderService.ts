@@ -10,6 +10,7 @@ export interface ReminderService {
 	getReminderById: (id: string) => Promise<Reminder | null>
 	updateReminder: (id: string, data: Prisma.ReminderUpdateInput) => Promise<Reminder | null>
 	cancelReminder: (id: string) => Promise<Reminder>
+	cancelRemindersBySequence: (sequenceId: string) => Promise<number>
 	markAsSent: (id: string, sentAt?: Date) => Promise<Reminder>
 	markAsFailed: (id: string, failedAt?: Date) => Promise<Reminder>
 	getRemindersByCustomer: (customerId: string) => Promise<Reminder[]>
@@ -75,7 +76,9 @@ export const makeReminderService = (deps: { reminderRepo: ReminderRepo }): Remin
 		cancelReminder: async (id) => {
 			return reminderRepo.updateReminder(id, { status: 'cancelled' })
 		},
-
+		cancelRemindersBySequence: async (sequenceId) => {
+			return reminderRepo.cancelRemindersBySequence(sequenceId)
+		},
 		markAsSent: async (id, sentAt = new Date()) => {
 			return reminderRepo.updateReminder(id, {
 				status: 'sent',
@@ -92,5 +95,8 @@ export const makeReminderService = (deps: { reminderRepo: ReminderRepo }): Remin
 		getRemindersByCustomer: async (customerId) => {
 			return reminderRepo.getRemindersByCustomer(customerId)
 		},
+		getRemindersBySequenceAndCustomer: async (sequenceId, customerId) => {
+			return reminderRepo.getRemindersBySequenceAndCustomer(sequenceId, customerId)
+		}
 	}
 }
